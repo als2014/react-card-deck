@@ -1,5 +1,5 @@
 {
-  "name": "react-cardstack",
+  "name": "react-cardstack-ext",
   "version": "0.1.0",
   "private": false,
   "license": "GPL-3.0",
@@ -25,7 +25,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/juspky/react-cardstack.git"
+    "url": "https://github.com/juspky/react-cardstack-ext.git"
   },
   "dependencies": {
     "lodash": "^4.17.14",
