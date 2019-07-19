@@ -38,6 +38,15 @@ class CardStack extends React.Component {
     fadeOutDirection: 'down',
     fadeOutDuration: 1,
     waitForFadeOut: false,
+    boxShadowLimit: 2
+  }
+
+  retrieveCard = (card) => {
+    card.fadingOut = false;
+    card.offsetX = Math.round(Math.random() * this.props.randomOffsetX * 2) - this.props.randomOffsetX;
+    card.offsetY = Math.round(Math.random() * this.props.randomOffsetY * 2) - this.props.randomOffsetY;
+    card.rotation = Math.round(Math.random() * this.props.randomRotationMaxDeg * 2) - this.props.randomRotationMaxDeg;
+    this.setState({ cards: [card, ...this.state.cards] });
   }
 
   nextCard = (currentCardIndex) => {
@@ -52,6 +61,11 @@ class CardStack extends React.Component {
     )
   }
 
+  nextCardToTarget = (currentCardIndex) => {
+    this.props.targetStack.current.retrieveCard({ ...this.state.cards[currentCardIndex] })
+    this.nextCard(currentCardIndex);
+  }
+
   render() {
     return (
       <CardsContainer>
@@ -62,7 +76,8 @@ class CardStack extends React.Component {
             cardIndex: card.index,
             cardsInDeck: this.state.cards.length,
             totalCards: this.props.cards.length,
-            nextCard: () => this.state.cards.filter(c => c.fadingOut).length - i === 0 && this.nextCard(i)
+            nextCard: () => this.state.cards.filter(c => c.fadingOut).length - i === 0 && this.nextCard(i),
+            nextCardToTarget: () => this.state.cards.filter(c => c.fadingOut).length - i === 0 && this.nextCardToTarget(i)
           })
           return (
             <Card key={card.index}
@@ -80,6 +95,7 @@ class CardStack extends React.Component {
               fadeOutDirection={this.props.fadeOutDirection}
               fadeOutDuration={this.props.fadeOutDuration}
               fadingOut={card.fadingOut}
+              boxShadowLimit={this.props.boxShadowLimit}
             >
               {CardComponent}
             </Card>
@@ -104,20 +120,23 @@ const Card = styled.div`
   bottom: calc((${p => p.offsetY}px + (${p => p.cardIndex} *  ${p => p.stackingDistanceY})) * -1 );
   left: calc((${p => p.offsetX}px + (${p => p.cardIndex} *  ${p => p.stackingDistanceX})));
   right: calc((${p => p.offsetX}px + (${p => p.cardIndex} *  ${p => p.stackingDistanceX})) * -1 );
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: all 0.3s;
   z-index: ${p => p.cardIndex * -1 + p.cardsInDeck};
 
-  :hover {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-  }
+  ${p => (p.cardIndex < p.boxShadowLimit || p.cardsInDeck - p.cardIndex < p.boxShadowLimit) && css`
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+      :hover {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+      }
+  `}
+  
 
-  ${p => p.fadingOut && css`{
+  ${p => p.fadingOut && css`
       animation: ${p => p.fadeOutDuration}s ${p => fadeOutDirectionMapper(p.fadeOutDirection)};
       user-select: none;
       transition: 0.3s, box-shadow 0s;
       box-shadow: none;
-  }`};
+  `};
 
   > div {
     box-sizing: border-box;

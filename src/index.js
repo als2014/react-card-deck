@@ -4,15 +4,47 @@ import { CardStack } from './lib';
 import styled from 'styled-components';
 import './index.css'
 
-const App = () => (
+const App = () => {
+  const targetStackL = React.createRef();
+  const targetStackR = React.createRef();
+
+  return(
   <div>
     <h1>Card Stack</h1>
     <Container>
       <CardContainer>
-        <CardStack cards={CardData} defaultCard={0} />
+        <CardStack cards={CardData} />
       </CardContainer>
       <CardContainer>
-        <CardStack cards={CardData2} defaultCard={0} />
+        <CardStack cards={CardData2} />
+      </CardContainer>
+    </Container>
+    <h1>Target Stack</h1>
+    <Container>
+      <CardContainer>
+        <CardStack 
+        ref={targetStackL}
+        targetStack={targetStackR}
+        fadeOutDirection='right'
+        />
+      </CardContainer>
+      <CardContainer>
+        <CardStack 
+         cards={CardData2} 
+         maxVisibleCards={4}
+         randomOffsetX={0}
+         randomOffsetY={0}
+         stackingDistanceY={'0px'}
+         stackingDistanceX={'5em'}
+         shrinkDistanceY={0.2}
+         shrinkDistanceX={0.2}
+         minScaleY={0.2}
+         minScaleX={0.2}
+         randomRotationMaxDeg={0}
+         fadeOutDirection='left'
+         targetStack={targetStackL}
+         ref={targetStackR}
+         />
       </CardContainer>
     </Container>
       <h1>Right to left</h1>
@@ -35,7 +67,8 @@ const App = () => (
       </CardContainer>
     </Container>
   </div>
-);
+  )
+  };
 
 const Container = styled.div`
   display: flex;
@@ -91,8 +124,8 @@ const getRandomColor = () => {
   return color;
 }
 
-const CountCard = ({ nextCard, i, backgroundColor }) => (
-  <CardContent style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '3em' }} backgroundColor={backgroundColor} onClick={() => nextCard()}>
+const CountCard = ({ nextCard, nextCardToTarget, i, backgroundColor }) => (
+  <CardContent style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '3em' }} backgroundColor={backgroundColor} onClick={() => nextCardToTarget()}>
     <div>{10 - i}</div>
   </CardContent>
 )
